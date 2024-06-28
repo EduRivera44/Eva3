@@ -8,7 +8,7 @@ var id_cliente      = document.getElementById("sel_id_cliente").value;
 var id_tipo_gestion = document.getElementById("sel_id_tipo_gestion").value;
 var id_resultado    = document.getElementById("sel_id_resultado").value;
 var comentarios     = document.getElementById("txt_comentarios").value;
-
+var fechaHoraActual = obtenerFechaHora();
 //Encabezado de la solicitud
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
@@ -20,7 +20,7 @@ const raw = JSON.stringify({
   "id_tipo_gestion": id_tipo_gestion,
   "id_resultado": id_resultado,
   "comentarios": comentarios,
-  "fecha_registro": "2024-06-05 10:52:00"
+  "fecha_registro": fechaHoraActual
 });
 
 //Opciones de solicitud
@@ -70,6 +70,7 @@ function listarGestion(){
 }
 
 function completarFila(element,index,arr){
+  var fechaHoraFormateada = formatearFechaHora(element.fecha_registro);
   arr[index] = document.querySelector("#tbl_gestion tbody").innerHTML +=
 `<tr>
 <td>${element.id_gestion}</td>
@@ -78,7 +79,7 @@ function completarFila(element,index,arr){
 <td>${element.nombre_tipo_gestion}</td>
 <td>${element.nombre_resultado}</td>
 <td>${element.comentarios}</td>
-<td>${element.fecha_registro}</td>
+<td>${fechaHoraFormateada}</td>
 <td>
 <a href='actualizar.html?id=${element.id_gestion}' class='btn btn-warning'>Actualizar</a> 
 <a href='eliminar.html?id=${element.id_gestion}' class='btn btn-danger'>Eliminar</a> 
@@ -86,6 +87,7 @@ function completarFila(element,index,arr){
 </tr>`
 }
 function obtenerIdActualizar(){
+  cargarListasDesplegables();
   //obtener datos de la solicitud
   const queryString  = window.location.search;
   //obtenemos todos los parámetros
@@ -134,8 +136,8 @@ function obtenerDatosActualizar(p_id_gestion){
 
 }
 function completarEtiqueta(element,index,arr){
-  var nombre_gestion = element.nombre_gestion;
-  document.getElementById('lbl_eliminar').innerHTML ="¿Desea eliminar la gestion? <b>" + nombre_gestion + "</b>";
+  var nombre_gestion = element.id_gestion;
+  document.getElementById('lbl_eliminar').innerHTML ="Desea eliminar la gestion? <b>" + nombre_gestion + "</b>";
 
 
 }
@@ -168,14 +170,14 @@ function actualizarGestion(){
   //Encabezado de la solicitud
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
-  
   //Carga útil de datos
   const raw = JSON.stringify({
-    "sel_id_usuario": id_usuario,
-    "sel_id_cliente": id_cliente,
-    "sel_id_tipo_gestion": id_tipo_gestion,
-    "sel_id_resultado": id_resultado,
-    "txt_comentarios": comentarios,
+    id_usuario: id_usuario,
+    id_cliente: id_cliente,
+    id_tipo_gestion: id_tipo_gestion,
+    id_resultado: id_resultado,
+    comentarios: comentarios,
+    
   });
   
   //Opciones de solicitud
@@ -187,16 +189,23 @@ function actualizarGestion(){
   };
   
   //Ejecutamos solicitud
-  fetch("http://144.126.210.74:8080/api/gestion/"+ g_id_gestion, requestOptions)
-    .then((response) => {
-      if(response.status == 200){
-        location.href ="listar.html";
-      }
-    })
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
-  }
-  function eliminarGestion(){
+  fetch("http://144.126.210.74:8080/api/gestion/" + g_id_gestion, requestOptions)
+  .then((response) => {
+    if (response.status === 200) {
+      location.href = "listar.html";
+    } else {
+      console.error("Error en la solicitud: ", response.status);
+      return response.text(); // Para obtener más detalles del error
+    }
+  })
+  .then((result) => {
+    if (result) {
+      console.log("Detalle del error: ", result);
+    }
+  })
+  .catch((error) => console.error("Error en la captura: ", error));
+}
+function eliminarGestion(){
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -209,7 +218,7 @@ function actualizarGestion(){
     };
     
     //Ejecutamos solicitud
-    fetch("http://144.126.210.74:8080/api/gestion/"+ g_id_gestion, requestOptions)
+    fetch("http://144.126.210.74:8080/api/gestion/"+g_id_gestion, requestOptions)
       .then((response) => {
         if(response.status == 200){
           location.href ="listar.html";
@@ -217,9 +226,9 @@ function actualizarGestion(){
       })
       .then((result) => console.log(result))
       .catch((error) => console.error(error));
-    }
+}
   
-    function cargarSelectResultado(){
+function cargarSelectResultado(){
       const requestOptions = {
         method: "GET",
         redirect: "follow"
@@ -237,9 +246,9 @@ function actualizarGestion(){
     function completarOptionResultado(element,index,arr){
       arr[index] = document.querySelector("#sel_id_resultado").innerHTML +=
     `<option value='${element.id_resultado}'> ${element.nombre_resultado} </option>`
-    }
+}
 
-    function cargarSelectCliente(){
+function cargarSelectCliente(){
       const requestOptions = {
         method: "GET",
         redirect: "follow"
@@ -257,8 +266,8 @@ function actualizarGestion(){
     function completarOptionCliente(element,index,arr){
       arr[index] = document.querySelector("#sel_id_cliente").innerHTML +=
     `<option value='${element.id_cliente}'> ${element.apellidos} ${element.nombres} </option>`
-    }
-    function cargarSelectUsuario(){
+}
+function cargarSelectUsuario(){
       const requestOptions = {
         method: "GET",
         redirect: "follow"
@@ -276,15 +285,15 @@ function actualizarGestion(){
     function completarOptionUsuario(element,index,arr){
       arr[index] = document.querySelector("#sel_id_usuario").innerHTML +=
     `<option value='${element.id_usuario}'> ${element.apellidos} ${element.nombres} </option>`
-    }
+}
 
-    function cargarSelectTipoGestion(){
+function cargarSelectTipoGestion(){
       const requestOptions = {
         method: "GET",
         redirect: "follow"
       };
       
-      fetch("http://144.126.210.74:8080/api/gestion?_size=200", requestOptions)
+      fetch("http://144.126.210.74:8080/api/tipo_gestion?_size=200", requestOptions)
         .then((response) => response.json())
         .then((json) => {
           json.forEach(completarOptionTipoGestion);
@@ -296,11 +305,47 @@ function actualizarGestion(){
     function completarOptionTipoGestion(element,index,arr){
       arr[index] = document.querySelector("#sel_id_tipo_gestion").innerHTML +=
     `<option value='${element.id_tipo_gestion}'> ${element.nombre_tipo_gestion} </option>`
-    }
+}
 
-    function cargarListasDesplegables(){
-      cargarSelectResultado();
-      cargarSelectCliente();
-      cargarSelectUsuario();
-      cargarSelectTipoGestion();
-    }
+function cargarListasDesplegables(){
+  cargarSelectResultado();
+  cargarSelectCliente();
+  cargarSelectUsuario();
+  cargarSelectTipoGestion();
+}
+
+function obtenerFechaHora() {
+
+  var fechaHoraActual = new Date();
+  var fechaHoraFormateada = fechaHoraActual.toLocaleString('es-ES', { 
+    hour12 : false, //para que la hora sea de 24 horas
+    year : 'numeric', //numeric para que sea 2024 - 2-digit para que sea 24
+    month : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2 
+    day : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2
+    hour : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2
+    minute : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2
+    second : '2-digit' //2-digit para que sea 02 -  numeric para que sea 2
+  }).replace(/(\d+)\/(\d+)\/(\d+)\,\s*(\d+):(\d+):(\d+)/,'$3-$2-$1 $4:$5:$6'); //con esto reemplazo la hora y fecha para ponerla en el formato que quiero
+  return fechaHoraFormateada;
+        
+}
+        
+        //esto tiene que estar en todos los listar
+        //new date obtiene la fecha y hora actual del sistema
+        //la de arribaentrega la hora de fercha actual y la de abajo entrega una fecha y hora formateada
+        
+function formatearFechaHora(fecha_registro) {
+        
+  var fechaHoraActual = new Date(fecha_registro);
+  var fechaHoraFormateada = fechaHoraActual.toLocaleString('es-ES', { 
+    hour12 : false, //para que la hora sea de 24 horas
+    year : 'numeric', //numeric para que sea 2024 - 2-digit para que sea 24
+    month : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2 
+    day : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2
+    hour : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2
+    minute : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2
+    second : '2-digit', //2-digit para que sea 02 -  numeric para que sea 2
+    timeZone : 'UTC', //para que la hora sea en UTC
+  }).replace(/(\d+)\/(\d+)\/(\d+)\,\s*(\d+):(\d+):(\d+)/,'$3-$2-$1 $4:$5:$6'); //con esto reemplazo la hora y fecha para ponerla en el formato que quiero
+  return fechaHoraFormateada;
+}

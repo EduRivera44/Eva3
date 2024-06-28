@@ -12,13 +12,13 @@
 
                 <div class="mb-3">
                   <label for="txt_rut" class="form-label">Rut Usuario</label>
-                  <input type="text" class="form-control" id="txt_rut" aria-describedby="rutHelp">
+                  <input type="text" class="form-control" id="txt_rut" aria-describedby="rutHelp" readonly>
                   <div id="rutHelp" class="form-text">Ingrese el nombre Rut sin Digito Verificador</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="txt_dv" class="form-label">DV</label>
-                    <input type="text" class="form-control" id="txt_dv" aria-describedby="dvHelp">
+                    <input type="text" class="form-control" id="txt_dv" aria-describedby="dvHelp" readonly>
                     <div id="dvHelp" class="form-text">Ingrese el digito Verificador</div>
                 </div>
 
@@ -52,7 +52,7 @@
                     <div id="usernameHelp" class="form-text">Ingrese su Username</div>
                 </div>
                 
-                <input class="btn btn-success" type="button" value="Actualizar" onclick="actualizarUsuario();">
+                <input class="btn btn-primary" type="button" value="Actualizar" onclick="actualizarUsuario();">
                 <input class="btn btn-danger" type="button" value="Cancelar" onclick="javascript:history.back();">
             </form>
         </div>
